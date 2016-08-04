@@ -15,10 +15,8 @@
 # limitations under the License.
 
 import base64
-import shutil
 import subprocess
 import sys
-import os
 
 from charmhelpers.fetch import (
     apt_install, filter_installed_packages,
@@ -187,21 +185,9 @@ def upgrade_charm():
     any_changed()
 
 
-def install_ceilometer_ocf():
-    dest_file = "/usr/lib/ocf/resource.d/openstack/ceilometer-agent-central"
-    src_file = 'ocf/openstack/ceilometer-agent-central'
-
-    if not os.path.isdir(os.path.dirname(dest_file)):
-        os.makedirs(os.path.dirname(dest_file))
-    if not os.path.exists(dest_file):
-        shutil.copy(src_file, dest_file)
-
-
 @hooks.hook('cluster-relation-joined')
 @restart_on_change(restart_map(), stopstart=True)
 def cluster_joined():
-    install_ceilometer_ocf()
-
     # If this node is the elected leader then share our secret with other nodes
     if is_elected_leader('grp_ceilometer_vips'):
         peer_store('shared_secret', get_shared_secret())

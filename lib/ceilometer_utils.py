@@ -26,6 +26,7 @@ from ceilometer_contexts import (
     LoggingConfigContext,
     MongoDBContext,
     CeilometerContext,
+    CeilometerOCFContext,
     HAProxyContext,
     CEILOMETER_PORT,
 )
@@ -48,6 +49,8 @@ HTTPS_APACHE_CONF = "/etc/apache2/sites-available/openstack_https_frontend"
 HTTPS_APACHE_24_CONF = "/etc/apache2/sites-available/" \
     "openstack_https_frontend.conf"
 CLUSTER_RES = 'grp_ceilometer_vips'
+CEILOMETER_AGENT_OCF = \
+    '/usr/lib/ocf/resource.d/openstack/ceilometer-agent-central'
 
 CEILOMETER_BASE_SERVICES = [
     'ceilometer-agent-central',
@@ -120,6 +123,10 @@ CONFIG_FILES = OrderedDict([
     (HTTPS_APACHE_24_CONF, {
         'hook_contexts': [ApacheSSLContext()],
         'services': ['apache2'],
+    }),
+    (CEILOMETER_AGENT_OCF, {
+        'hook_contexts': [CeilometerOCFContext()],
+        'permissions': [0o744],
     })
 ])
 
@@ -152,6 +159,17 @@ def register_configs():
         configs.register(HTTPS_APACHE_CONF,
                          CONFIG_FILES[HTTPS_APACHE_CONF]['hook_contexts'])
     return configs
+
+
+def apply_template_permissions():
+    """
+    Apply post-write permissions since the template handler won't do it.
+
+    :returns: None
+    """
+    for f, ctxt in CONFIG_FILES.iteritems():
+         if ctxt['permissions']:
+            chmod(f, ctxt['permissions'])
 
 
 def restart_map():

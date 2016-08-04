@@ -32,7 +32,8 @@
 
 # Fill in some defaults if no values are specified
 
-OCF_RESKEY_binary_default="ceilometer-agent-central"
+OCF_RESKEY_binary_default="ceilometer-polling"
+OCF_RESKEY_additional_parameters=" --polling-namespaces central"
 OCF_RESKEY_config_default="/etc/ceilometer/ceilometer.conf"
 OCF_RESKEY_user_default="ceilometer"
 OCF_RESKEY_pid_default="$HA_RSCTMP/$OCF_RESOURCE_INSTANCE.pid"
@@ -153,7 +154,7 @@ ceilometer_agent_central_check_port() {
     local cnt
     
     int="$1"
-    cnt=${#int}
+    cnt=${{ '{#' }}int}
     echo $int |egrep -qx '[0-9]+(:[0-9]+)?(,[0-9]+(:[0-9]+)?)*'
 
     if [ $? -ne 0 ] || [ $cnt -ne 4 ]; then

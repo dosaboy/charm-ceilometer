@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
 from charmhelpers.core.hookenv import (
     relation_ids,
     relation_get,
@@ -136,3 +138,15 @@ class ApacheSSLContext(SSLContext):
 
     external_ports = [CEILOMETER_PORT]
     service_namespace = "ceilometer"
+
+
+class CeilometerOCFContext(OSContextGenerator):
+
+    def __call__(self):
+        ctxt = {}
+
+        ocf_dir = '/usr/lib/ocf/resource.d/openstack'
+        if not os.path.isdir(ocf_dir):
+            os.makedirs(ocf_dir)
+
+        return ctxt

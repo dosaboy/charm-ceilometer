@@ -234,10 +234,8 @@ class CeilometerHooksTest(CharmTestCase):
         self.service_restart.assert_has_calls([call1, call2], any_order=False)
 
     @patch('charmhelpers.core.hookenv.config')
-    @patch.object(hooks, 'install_ceilometer_ocf')
     @patch.object(hooks, 'is_elected_leader')
-    def test_cluster_joined_not_leader(self, mock_leader, mock_install_ocf,
-                                       mock_config):
+    def test_cluster_joined_not_leader(self, mock_leader, mock_config):
         mock_leader.return_value = False
 
         hooks.hooks.execute(['hooks/cluster-relation-joined'])
@@ -246,10 +244,9 @@ class CeilometerHooksTest(CharmTestCase):
 
     @patch('charmhelpers.core.hookenv.config')
     @patch.object(hooks, 'get_shared_secret')
-    @patch.object(hooks, 'install_ceilometer_ocf')
     @patch.object(hooks, 'is_elected_leader')
-    def test_cluster_joined_is_leader(self, mock_leader, mock_install_ocf,
-                                      shared_secret, mock_config):
+    def test_cluster_joined_is_leader(self, mock_leader, shared_secret,
+                                      mock_config):
         mock_leader.return_value = True
         shared_secret.return_value = 'secret'
 
